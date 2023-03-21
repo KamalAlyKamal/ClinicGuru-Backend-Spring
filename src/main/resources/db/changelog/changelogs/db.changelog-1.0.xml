@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_function" value="uuid_generate_v4()" dbms="postgresql"/>
+    <changeSet id="202010211812" author="Kamal Aly">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="user_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="username" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="user_username_unq" nullable="false" notNullConstraintName="user_username_nn" />
+            </column>
+            <column name="password" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="user_password_nn"/>
+            </column>
+            <column name="first_name" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="user_firstname_nn"/>
+            </column>
+            <column name="last_name" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="user_lastname_nn"/>
+            </column>
+            <column name="email" type="varchar(250)"/>
+            <column name="token" type="varchar(250)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
