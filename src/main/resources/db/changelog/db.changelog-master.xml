@@ -11,7 +11,7 @@
     <property name="uuid_type" value="uuid" dbms="postgresql"/>
     <property name="uuid_function" value="uuid_generate_v4()" dbms="postgresql"/>
     <changeSet id="202010211812" author="Kamal Aly">
-        <createTable tableName="User">
+        <createTable tableName="user">
             <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
                 <constraints primaryKey="true" primaryKeyName="user_id_pk" nullable="false" unique="true"/>
             </column>
@@ -21,16 +21,16 @@
             <column name="password" type="varchar(250)">
                 <constraints nullable="false" notNullConstraintName="user_password_nn"/>
             </column>
-            <column name="firstName" type="varchar(250)">
+            <column name="first_name" type="varchar(250)">
                 <constraints nullable="false" notNullConstraintName="user_firstname_nn"/>
             </column>
-            <column name="lastName" type="varchar(250)">
+            <column name="last_name" type="varchar(250)">
                 <constraints nullable="false" notNullConstraintName="user_lastname_nn"/>
             </column>
             <column name="email" type="varchar(250)"/>
             <column name="token" type="varchar(250)"/>
-            <column name="createdAt" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
-            <column name="updatedAt" type="TIMESTAMP"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
