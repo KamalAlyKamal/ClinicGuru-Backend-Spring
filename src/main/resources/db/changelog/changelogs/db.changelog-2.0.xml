@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_function" value="uuid_generate_v4()" dbms="postgresql"/>
+    <changeSet id="202010211816" author="Kamal Aly">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="examination"/>
+            </not>
+            <not>
+                <tableExists tableName="investigation"/>
+            </not>
+            <not>
+                <tableExists tableName="vezeeta"/>
+            </not>
+            <not>
+                <tableExists tableName="patient"/>
+            </not>
+            <not>
+                <tableExists tableName="appointment"/>
+            </not>
+        </preConditions>
+        <sql>CREATE TYPE type AS ENUM ('E','C')</sql>
+        <sql>CREATE TYPE gender AS ENUM ('M','F')</sql>
+        <sql>CREATE TYPE femaleStatus AS ENUM ('pregnant','lactating', 'both')</sql>
+        <createTable tableName="examination">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="examination_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="examination_name_unq" nullable="false" notNullConstraintName="examination_name_nn" />
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="investigation">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="investigation_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="investigation_name_unq" nullable="false" notNullConstraintName="investigation_name_nn" />
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="vezeeta">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="vezeeta_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="type" type="type">
+                <constraints nullable="false" notNullConstraintName="vezeeta_type_nn" />
+            </column>
+            <column name="value" type="smallint">
+                <constraints nullable="false" notNullConstraintName="vezeeta_value_nn" />
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="patient">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="patient_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="patient_name_nn" />
+            </column>
+            <column name="gender" type="gender">
+                <constraints nullable="false" notNullConstraintName="patient_gender_nn" />
+            </column>
+            <column name="femaleStatus" type="femaleStatus" />
+            <column name="diseases" type="varchar(250) []" />
+            <column name="medications" type="varchar(250) []" />
+            <column name="operations" type="varchar(250) []" />
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="appointment">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="appointment_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="appointmentDate" type="date">
+                <constraints nullable="false" notNullConstraintName="appointment_appointmentDate_nn" />
+            </column>
+            <column name="type" type="type">
+                <constraints nullable="false" notNullConstraintName="appointment_type_nn" />
+            </column>
+            <column name="complaints" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="appointment_complaints_nn" />
+            </column>
+            <column name="treatment" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="appointment_treatment_nn" />
+            </column>
+            <column name="amountPaid" type="smallint">
+                <constraints nullable="false" notNullConstraintName="appointment_amountPaid_nn" />
+            </column>
+            <column name="currency" type="varchar(10)">
+                <constraints nullable="false" notNullConstraintName="appointment_currency_nn" />
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="patient_id" type="${uuid_type}">
+                <constraints nullable="false" notNullConstraintName="appointment_patient_fk_nn" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="appointment" constraintName="fk_appointment_patient"
+                                 deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="patient" validate="true"/>
+        <createTable tableName="appointment_examination">
+            <column name="appointment_id" type="${uuid_type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="examination_id" type="${uuid_type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_appointment"
+                                 baseTableName="appointment_examination" baseColumnNames="appointment_id"
+                                 referencedTableName="appointment" referencedColumnNames="id" />
+        <addForeignKeyConstraint constraintName="fk_examination"
+                                 baseTableName="appointment_examination" baseColumnNames="examination_id"
+                                 referencedTableName="examination" referencedColumnNames="id" />
+        <createTable tableName="appointment_investigation">
+            <column name="appointment_id" type="${uuid_type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="investigation_id" type="${uuid_type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_appointment"
+                                 baseTableName="appointment_investigation" baseColumnNames="appointment_id"
+                                 referencedTableName="appointment" referencedColumnNames="id" />
+        <addForeignKeyConstraint constraintName="fk_investigation"
+                                 baseTableName="appointment_investigation" baseColumnNames="investigation_id"
+                                 referencedTableName="investigation" referencedColumnNames="id" />
+    </changeSet>
+</databaseChangeLog>
