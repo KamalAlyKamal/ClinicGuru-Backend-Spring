@@ -13,10 +13,10 @@
     <changeSet id="202010211812" author="Kamal Aly">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="user"/>
+                <tableExists tableName="userEntity"/>
             </not>
         </preConditions>
-        <createTable tableName="user">
+        <createTable tableName="userEntity">
             <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
                 <constraints primaryKey="true" primaryKeyName="user_id_pk" nullable="false" unique="true"/>
             </column>
