@@ -2,21 +2,17 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
-        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <property name="uuid_type" value="uuid" dbms="postgresql"/>
     <property name="uuid_function" value="uuid_generate_v4()" dbms="postgresql"/>
     <changeSet id="202010211812" author="Kamal Aly">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="userEntity"/>
+                <tableExists tableName="user"/>
             </not>
         </preConditions>
-        <createTable tableName="userEntity">
+        <createTable tableName="user">
             <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
                 <constraints primaryKey="true" primaryKeyName="user_id_pk" nullable="false" unique="true"/>
             </column>

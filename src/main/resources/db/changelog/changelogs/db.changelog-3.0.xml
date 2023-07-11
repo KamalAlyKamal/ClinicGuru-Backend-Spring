@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_function" value="uuid_generate_v4()" dbms="postgresql"/>
+    <changeSet id="202010211817" author="Kamal Aly">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="token"/>
+            </not>
+        </preConditions>
+        <createTable tableName="token">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="token_id_pk" nullable="false" unique="true"/>
+            </column>
+            <column name="token" type="varchar(65535)">
+                <constraints unique="true" uniqueConstraintName="token_token_unq" nullable="false" notNullConstraintName="token_token_nn" />
+            </column>
+            <column name="token_type" type="varchar(50)" defaultValue="BEARER"/>
+            <column name="revoked" type="boolean"/>
+            <column name="expired" type="boolean"/>
+            <column name="user_id" type="${uuid_type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="token" constraintName="fk_token_user"
+                                 deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
+                                 referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
