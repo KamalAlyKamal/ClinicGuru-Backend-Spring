@@ -1,7 +1,9 @@
 package com.clinicguru.application.auth;
 
+import com.clinicguru.application.auth.fixtures.AuthenticationRequestFixture;
 import com.clinicguru.application.auth.fixtures.AuthenticationResponseFixture;
 import com.clinicguru.application.auth.fixtures.RegisterRequestFixture;
+import com.clinicguru.application.auth.models.AuthenticationRequest;
 import com.clinicguru.application.auth.models.AuthenticationResponse;
 import com.clinicguru.application.auth.models.RegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +59,49 @@ class AuthenticationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void GivenPOSTAuthenticateAPI_WhenValidAuthenticateRequest_ThenReturn200AccessToken() throws Exception {
+        AuthenticationRequest authenticationRequest = AuthenticationRequestFixture.create();
+        AuthenticationResponse authenticationResponse = AuthenticationResponseFixture.create();
+
+        when(authenticationService.authenticate(any())).thenReturn(authenticationResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/auth/login")
+                        .content(asJsonString(authenticationRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.access_token").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.refresh_token").exists());
+    }
+
+    @Test
+    void GivenPOSTAuthenticateAPI_WhenInvalidAuthenticateRequest_ThenReturn400() throws Exception {
+        AuthenticationRequest authenticationRequest = AuthenticationRequestFixture.create();
+        authenticationRequest.setUsername(null);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/auth/login")
+                        .content(asJsonString(authenticationRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void GivenPOSTRefreshTokenAPI_WhenValidRefreshTokenRequest_ThenReturnAccessToken() throws Exception {
+//        MockHttpServletRequest request = new MockHttpServletRequest();
+//        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer 123");
+//        AuthenticationController controller = new AuthenticationController(authenticationService);
+//
+//
+//
+//
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .post("/api/auth/refresh-token");
     }
 
     public static String asJsonString(final Object obj) {
